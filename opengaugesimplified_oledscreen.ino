@@ -2,6 +2,41 @@
 *  using MC33290 ISO K line chip to level shift the 12v logic from the car computer to work with arduino
 */
 
+/* OBDuino
+ Copyright (C) 2008-2009
+ Main coding/ISO/ELM: Frédéric (aka Magister on ecomodder.com)
+ LCD part: Dave (aka dcb on ecomodder.com), optimized by Frédéric
+ Fixes and Features: 
+  Russ: Added serial_rx_off() and serial_rx_on() functions to disable and enable serial receiver
+        Modified iso_write_byte() to disable serial receiver while sending to avoid echos in buffer
+        Modified iso_write_byte() to include intrabyte delay
+        Modified iso_write_data() to remove intrabyte delay (now included in iso_write_byte())
+        Modified iso_read_data() to return only data, not PID + data
+        Modified iso_read_data() to insure minimum 55 ms delay between requests
+        Modified pid_reslen table to correct some lengths-others appear incorrect but aren't supported
+          by my car, so I can't verify.  Specifically, some lengths are 8, when max data size in 
+          iso 9141 packet is 7.
+  Mike: Added Tracking of Fuel wasted while idling, total for tank displayed when engine shut off.
+        Modified iso_read_byte() to return 0 if no respose is received [for when ECU shuts off quicker
+           then the engine so the progam will now know when engine is off and can save parameters]
+        Backlight will turn off when engine is not running.
+Still need to:
+          Modify iso_init to allow re-init without resetting arduino.
+          Fix code to retrieve stored trouble codes.
+ 
+ This program is free software; you can redistribute it and/or modify it under
+ the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later
+ version.
+ This program is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ You should have received a copy of the GNU General Public License along with
+ this program; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA
+ */
+
+
 #include <stdio.h>
 #include<EEPROM.h>
 #include <avr/pgmspace.h>
